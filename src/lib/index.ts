@@ -21,32 +21,27 @@ export const arrayChunks = <T>(array: T[], chunkSize: number) =>
 	}, []);
 
 export function getLastSunday(day: Date) {
-	const year = day.getFullYear();
-	const month = day.getMonth();
-	const date = day.getDate();
+	if (day.getDay() === 0) return day;
 
-	const result = new Date(year, month, date);
+	const result = new Date(day);
 
 	const weekday = result.getDay();
 	const dayDiff = weekday === 0 ? 7 : weekday;
 
 	result.setDate(result.getDate() - dayDiff);
 
-	return new Date(result);
+	return result;
 }
 
 export function getNextSaturday(day: Date) {
-	const year = day.getFullYear();
-	const month = day.getMonth();
-	const date = day.getDate();
-
-	const result = new Date(year, month, date);
+	if (day.getDay() === 6) return day;
+	const result = new Date(day);
 
 	const weekday = result.getDay();
 	const diff = 6 - weekday;
-	result.setDate(date + diff);
+	result.setDate(result.getDate() + diff);
 
-	return new Date(result.toDateString());
+	return result;
 }
 
 export function getLastDay(year: number, month: number) {

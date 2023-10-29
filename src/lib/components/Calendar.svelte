@@ -76,8 +76,6 @@
 		grid-template-rows: 2rem repeat(6, 1fr);
 		grid-column-gap: 0.5rem;
 		grid-row-gap: 0.5rem;
-
-		width: clamp(768px, 100%, 1024px);
 	}
 
 	.calendar > span {

@@ -23,10 +23,11 @@
 </svelte:head>
 
 <section>
-	<h2>{monthNames[$month]}</h2>
+	<h2>{$today.toLocaleDateString()}</h2>
 	<div>
 		<a on:click={prevMonth}>Prev</a>
 		<a on:click={nextMonth}>Next</a>
+    <a on:click={() => today.set(new Date())}>Today</a>
 	</div>
 </section>
 <Calendar />

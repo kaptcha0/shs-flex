@@ -24,6 +24,7 @@
 	article {
     margin: 0;
     filter: opacity(60%) brightness(80%);
+    font-size: smaller;
     transition: all 250ms ease;
 	}
 
