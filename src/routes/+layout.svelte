@@ -1,30 +1,17 @@
 <script>
-	import { auth, firestore } from '$lib/firestore';
-	import { FirebaseApp, SignedIn, SignedOut } from 'sveltefire';
+	import Nav from '../lib/components/Nav.svelte';
+
+	import { auth, firestore, storage } from '$lib/firestore';
+	import { FirebaseApp } from 'sveltefire';
 </script>
 
 <svelte:head>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
 </svelte:head>
 
-<FirebaseApp {firestore} {auth}>
+<FirebaseApp {firestore} {auth} {storage}>
 	<main class="container">
-		<nav>
-			<ul>
-				<li><a href="/"><strong>SHS Flex</strong></a></li>
-			</ul>
-			<ul>
-				<SignedIn let:user>
-					<li role="link">Pull Request</li>
-					<li>
-						<a href="/auth"><strong>{user.displayName}</strong></a>
-					</li>
-				</SignedIn>
-				<SignedOut>
-					<li><a href="/login" role="button">Login</a></li>
-				</SignedOut>
-			</ul>
-		</nav>
+		<Nav />
 		<slot />
 	</main>
 </FirebaseApp>
@@ -33,10 +20,6 @@
 	main {
 		width: clamp(768px, 100%, 1024px);
 		height: 100%;
-	}
-
-	nav strong {
-		color: var(--h6-color)
 	}
 
 	:global(html, body) {

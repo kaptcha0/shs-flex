@@ -34,17 +34,6 @@
 				? lastDayOfCurrentMonth
 				: getNextSaturday(nextMonth);
 
-		console.log({
-			$today,
-			firstDayDisplayed,
-			lastDayDisplayed,
-			firstDateDisplayedDay: firstDayDisplayed.getDay(),
-			firstMonthDate: firstDayOfCurrentMonth.getDay(),
-			firstDayOfCurrentMonth,
-			lastDayOfLastMonth,
-			lastDayOfCurrentMonth
-		});
-
 		for (const d = new Date(firstDayDisplayed); d <= lastDayDisplayed; d.setDate(d.getDate() + 1)) {
 			days.push({
 				date: new Date(d),

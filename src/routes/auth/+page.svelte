@@ -1,53 +1,65 @@
 <script>
-	import { Student } from '$lib/db/student';
-	import { Teacher } from '$lib/db/teacher';
 	import { auth } from '$lib/firestore';
-	import { GoogleAuthProvider, signOut, signInWithPopup } from 'firebase/auth';
+	import {
+		GoogleAuthProvider,
+		signOut,
+		signInWithPopup,
+		sendSignInLinkToEmail,
+		isSignInWithEmailLink,
+		signInWithEmailLink
+	} from 'firebase/auth';
 	import { SignedIn, SignedOut } from 'sveltefire';
-
+	import { PUBLIC_URL } from '$env/static/public';
+	import { onMount } from 'svelte';
+	
 	const provider = new GoogleAuthProvider();
 	provider.addScope('profile');
 	provider.addScope('email');
 
-    let email = ''
+	/** @type {string | null} */
+	let email;
 
 	const loginWithGoogle = async () => {
 		const authResult = await signInWithPopup(auth, provider);
 
-		const { email, displayName } = authResult.user;
+		const { email } = authResult.user;
 
-		if (!email || !displayName) return;
-
-		const isStudentRegex = /.*-.*@/g;
-		const isStudent = isStudentRegex.test(email);
-
-		/** @type {import('$lib/types').Person} */
-		let person;
-
-		if (isStudent) {
-			person = new Student(email, displayName);
-		} else {
-			person = new Teacher(email, displayName, '');
-		}
-
-		const result = await person.save();
-
-		console.log(result);
+		if (!email) return;
 	};
-    
-    const loginWithMagicLink = async () => {
-        // TODO
-    }
+
+	const loginWithMagicLink = async () => {
+		if (!email) return;
+
+		await sendSignInLinkToEmail(auth, email, {
+			url: PUBLIC_URL + '/auth',
+			handleCodeInApp: true
+		});
+
+		window.localStorage.setItem('emailForMagicLink', email);
+	};
 
 	const logout = async () => {
 		await signOut(auth);
 	};
+
+	onMount(async () => {
+		const url = window.location.href;
+		if (isSignInWithEmailLink(auth, url)) {
+			email = window.localStorage.getItem('emailForMagicLink');
+
+			if (!email) return;
+
+			await signInWithEmailLink(auth, email, url);
+
+			window.localStorage.removeItem('emailForMagicLink');
+		}
+	});
 </script>
 
 <div>
 	<SignedOut>
 		<form on:submit={loginWithMagicLink}>
-			<input type="text" name="email" placeholder="Email" bind:value={email} />
+			<input type="email" name="email" placeholder="Email" bind:value={email} />
 			<input type="submit" value="Login with Email" />
 		</form>
 		<button on:click={loginWithGoogle}> Sign in with Google </button>

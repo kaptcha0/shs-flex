@@ -1,13 +1,7 @@
 import { firestore } from '$lib/firestore';
-import {
-	type Person,
-	Role,
-	type PullRequest,
-	type PotentialResult,
-	type PotentialError,
-	personPath
-} from '$lib/types';
-import { doc, setDoc } from 'firebase/firestore';
+import type { PullRequest, PotentialResult, PotentialError } from '$lib/types';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { type Person, personPath, Role } from './person';
 
 export class Student implements Person {
 	readonly role: Role;
@@ -26,9 +20,11 @@ export class Student implements Person {
 		const ref = doc(firestore, personPath, this.id);
 
 		try {
-			await setDoc(ref, Object.assign({}, this), {
-				merge: true
-			});
+			const doc = await getDoc(ref);
+
+			if (!doc.exists()) {
+				await setDoc(ref, this.toObject());
+			}
 
 			return { success: this, error: null };
 		} catch (e) {
@@ -39,4 +35,9 @@ export class Student implements Person {
 	pullRequest(date: Date, request: PullRequest): PotentialError<Error> {
 		throw new Error('Method not implemented.');
 	}
+
+	toObject(): Object {
+		return Object.assign({}, this);
+	}
 }
+
